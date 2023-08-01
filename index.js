@@ -73,6 +73,9 @@ client.on("interactionCreate", async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
     if (interaction.channelId !== discordChannelId) {
+        await interaction.reply({
+            content: `Please use this command in <#${discordChannelId}>`, ephemeral: true,
+        });
         return;
     }
 
@@ -243,12 +246,14 @@ const processActivity = async (athleteId, activityId) => {
 
         const link = `https://www.strava.com/activities/${activityId}`;
 
+        // noinspection JSCheckFunctionSignatures
         const linkedEmbed = new EmbedBuilder()
             .setColor(0x63fc30)
             .setTitle(name)
             .setDescription(`<@${discordId}> uploaded [a ${camelCaseToNormal(sport_type)}](${link})! Give them Kudos!\n\n${description}`)
             .setTimestamp(new Date(start_date))
             .setURL(link)
+            .setFooter({text: "Link your Strava with /link"})
             .setImage(photo)
             .addFields(...fields);
 
@@ -318,10 +323,12 @@ app.get("/callback", async (req, res) => {
         discordId, ...await getUserInfo(tokenJson.athlete.id.toString()),
     });
 
+    // noinspection JSCheckFunctionSignatures
     const linkedEmbed = new EmbedBuilder()
         .setColor(0x63fc30)
         .setTitle("Strava Linked")
         .setDescription(`Successfully linked <@${discordId}>'s [Strava account](https://www.strava.com/athletes/${tokenJson.athlete.id})  🎉`)
+        .setFooter({text: "Link your Strava with /link"})
         .setTimestamp();
 
 
