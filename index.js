@@ -252,7 +252,7 @@ const processActivity = async (athleteId, activityId) => {
         const linkedEmbed = new EmbedBuilder()
             .setColor(0x63fc30)
             .setTitle(name)
-            .setDescription(`<@${discordId}> uploaded [a ${camelCaseToNormal(sport_type)}](${link})! Give them Kudos!\n\n${description}`)
+            .setDescription(`<@${discordId}> uploaded [a ${camelCaseToNormal(sport_type)}](${link})! Give them Kudos!\n\n${description || ''}`.trim())
             .setTimestamp(new Date(start_date))
             .setURL(link)
             .setFooter({text: "Link your Strava with /link"})
