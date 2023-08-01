@@ -144,6 +144,8 @@ async function refresh(athleteId) {
     const refresh_token = (await getUserInfo(athleteId)).refreshToken;
     console.log("refreshing token", athleteId, refresh_token);
 
+    if(!refresh_token) throw new Error("No refresh token");
+
     const req = await fetch("https://www.strava.com/oauth/token", {
         method: "POST", headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -335,7 +337,7 @@ app.get("/callback", async (req, res) => {
     const channel = await client.channels.fetch(discordChannelId);
     await channel.send({embeds: [linkedEmbed]});
 
-    res.send("ok");
+    res.status(200).send("Success! You can close this page now :)");
 });
 
 
