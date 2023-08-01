@@ -5,6 +5,7 @@ import * as fs from "fs";
 import "dotenv/config";
 import {ActionRowBuilder, EmbedBuilder, REST, Routes} from "discord.js";
 import {Client, GatewayIntentBits, ButtonBuilder, ButtonStyle} from 'discord.js';
+import {createServer} from "https";
 
 const client = new Client({intents: [GatewayIntentBits.Guilds]});
 const app = express().use(bodyParser.json());
@@ -113,8 +114,14 @@ client.on("interactionCreate", async interaction => {
 
 client.login(discordBotToken);
 
-
-app.listen(process.env.PORT || 8080, () => console.log("Server ready"));
+if(process.env.HTTPS_KEY){
+    createServer({
+        key: fs.readFileSync(process.env.HTTPS_KEY),
+        cert: fs.readFileSync(process.env.HTTPS_CERT),
+    }, app).listen(process.env.PORT || 8080, () => console.log("Server ready"));
+}else{
+    app.listen(process.env.PORT || 8080, () => console.log("Server ready"));
+}
 
 app.post("/webhook", async (req, res) => {
     const {aspect_type, object_id, object_type, owner_id} = req.body;
