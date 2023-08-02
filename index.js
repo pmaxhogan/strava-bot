@@ -148,13 +148,14 @@ async function refresh(athleteId) {
 
     const req = await fetch("https://www.strava.com/oauth/token", {
         method: "POST", headers: {
+            "Accept": "application/json",
             "Content-Type": "application/x-www-form-urlencoded",
         }, body: new URLSearchParams({
             grant_type: "refresh_token",
             client_id: stravaClientId.toString(),
             client_secret: stravaClientSecret,
             refresh_token
-        }).toString()
+        })
     });
     const json = await req.json();
     if (req.status !== 200) {
@@ -162,7 +163,8 @@ async function refresh(athleteId) {
     }
 
     await setUserInfo(athleteId, {
-        accessToken: json.access_token, refreshToken: json.refresh_token, ...await getUserInfo(athleteId)
+        ...await getUserInfo(athleteId),
+        accessToken: json.access_token, refreshToken: json.refresh_token
     });
 }
 
@@ -319,10 +321,11 @@ app.get("/callback", async (req, res) => {
     const tokenJson = await tokenReq.json();
 
     await setUserInfo(tokenJson.athlete.id.toString(), {
+        ...await getUserInfo(tokenJson.athlete.id.toString()),
         accessToken: tokenJson.access_token,
         refreshToken: tokenJson.refresh_token,
         photo: tokenJson.athlete.profile,
-        discordId, ...await getUserInfo(tokenJson.athlete.id.toString()),
+        discordId,
     });
 
     // noinspection JSCheckFunctionSignatures
