@@ -17,6 +17,8 @@ const discordBotToken = process.env.DISCORD_BOT_TOKEN;
 const discordClientId = process.env.DISCORD_CLIENT_ID;
 const discordChannelId = process.env.DISCORD_CHANNEL_ID;
 
+const seenActivities = new Set();
+
 const configFile = "config.json";
 let config = {};
 try {
@@ -196,6 +198,13 @@ const formatTime = time => `${Math.floor(time / (60 * 60))}:${format2LeadingZero
 
 const processActivity = async (athleteId, activityId) => {
     console.log("activity", athleteId, activityId);
+
+    if(seenActivities.has(activityId)) {
+        console.log("already seen", activityId);
+        return;
+    }
+    seenActivities.add(activityId);
+
     const activityReq = await fetchRefreshIfNeeded(athleteId, `https://www.strava.com/api/v3/activities/${activityId}`, {
         headers: {
             "Accept": "application/json",
